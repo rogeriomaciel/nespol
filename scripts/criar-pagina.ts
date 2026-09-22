@@ -177,7 +177,23 @@ import ReactDOM from 'react-dom/client';
 import ${pascalCase} from '../pages/${pascalCase}';
 import '../index.css';
 
-const root = document.getElementById('root');
+const container = document.getElementById('root')!;
+
+const hydrate = () => {
+  if (container.hasChildNodes()) {
+    ReactDOM.hydrateRoot(container, <${pascalCase} />);
+  } else {
+    ReactDOM.createRoot(container).render(<${pascalCase} />);
+  }
+};
+
+if (typeof window !== 'undefined') {
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(hydrate);
+  } else {
+    setTimeout(hydrate, 50);
+  }
+}
 if (root) {
   ReactDOM.hydrateRoot(
     root,
