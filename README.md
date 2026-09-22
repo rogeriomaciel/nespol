@@ -13,7 +13,7 @@
 3. [Design System & Componentes Modulares](#-design-system--componentes-modulares)
 4. [Configuração Central do Cliente (`site.config.ts`)](#-configuração-central-do-cliente)
 5. [Como Provisionar um Novo Cliente (Passo a Passo)](#-como-provisionar-um-novo-cliente)
-6. [Como Criar uma Nova Landing Page (ex: `/lp4`)](#-como-criar-uma-nova-landing-page)
+6. [Como Criar uma Nova Landing Page (1 Comando)](#-como-criar-uma-nova-landing-page-1-comando-automático)
 7. [Deploy Contínuo (CI/CD) para VPS via GitHub Actions](#-deploy-contínuo-cicd-para-vps)
 8. [Configuração Recomendada do Nginx na VPS](#-configuração-recomendada-do-nginx-na-vps)
 9. [Como Sincronizar Melhorias da Base (`sync-base.sh`)](#-como-sincronizar-melhorias-da-base)
@@ -153,80 +153,41 @@ O script executa automaticamente:
 
 ---
 
-## ✏️ Como Criar uma Nova Landing Page (ex: `/lp4`)
+## ⚡ Como Criar uma Nova Landing Page (1 Comando Automático)
 
-Criar uma nova página de vendas leva menos de 2 minutos:
+O template possui um gerador de páginas Bare-Metal integrado via linha de comando:
 
-### 1. Crie o componente da página em `src/pages/Lp4.tsx`:
-```tsx
-import { Navbar } from '../components/Navbar';
-import { Hero } from '../components/Hero';
-import { Footer } from '../components/Footer';
-import { WhatsAppCTA } from '../components/WhatsAppCTA';
-
-export default function Lp4() {
-  return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      <Navbar />
-      <main>
-        <Hero
-          badgeText="OFERTA EXCLUSIVA"
-          title="Nova Campanha de Alta Conversão"
-          subtitle="Copy focada em um segmento específico do cliente."
-        />
-        <WhatsAppCTA variant="card" />
-      </main>
-      <Footer />
-      <WhatsAppCTA variant="floating" />
-    </div>
-  );
-}
+```bash
+bun run criar-pagina <slug> [titulo] [descricao]
 ```
 
-### 2. Crie o entry point em `src/entries/lp4.tsx`:
-```tsx
-import ReactDOM from 'react-dom/client';
-import Lp4 from '../pages/Lp4';
-import '../index.css';
+### Exemplos de Uso:
+```bash
+# Criar uma nova LP sequencial padrão
+bun run criar-pagina lp4
 
-const container = document.getElementById('root')!;
-if (container.hasChildNodes()) {
-  ReactDOM.hydrateRoot(container, <Lp4 />);
-} else {
-  ReactDOM.createRoot(container).render(<Lp4 />);
-}
+# Criar uma LP para campanha de alta autoridade
+bun run criar-pagina consultoria "Consultoria de Engenharia de Tráfego" "Acelere seu site e recupere leads perdidos na tela branca"
+
+# Criar uma LP temática sazonal
+bun run criar-pagina black-friday "Black Friday Bare-Metal" "Oferta exclusiva por tempo limitado com garantia contratual"
 ```
 
-### 3. Crie o arquivo HTML em `lp4/index.html`:
-```html
-<!DOCTYPE html>
-<html lang="pt-BR" class="dark scroll-smooth">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Título da LP 4</title>
-  </head>
-  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans">
-    <div id="root"></div>
-    <script type="module" src="/src/entries/lp4.tsx"></script>
-  </body>
-</html>
+### 🤖 O que este comando faz automaticamente em 1 segundo:
+1. **Cria a pasta e HTML:** `/<slug>/index.html` com metatags OpenGraph, preconnect de fontes e container root.
+2. **Cria o Entry de Hidratação React 19:** `src/entries/<slug>.tsx` com hidratação ultraveloz.
+3. **Cria o Componente Completo da Página:** `src/pages/<PascalCase>.tsx` já totalmente montado com os componentes do design system (Hero, Simulador Financeiro de Perda por Lentidão, Tabela Comparativa, Métricas de Autoridade, Prova Social, FAQ e Botões de WhatsApp com rastreamento).
+4. **Atualiza o Sitemap:** Adiciona a nova URL ao `public/sitemap.xml`.
+5. **Zero Edição Manual de Configuração:** Tanto o `vite.config.ts` quanto o `scripts/prerender.ts` possuem **descoberta dinâmica de páginas** — ao criar a pasta, o Vite já compila e o SSG Prerender já gera o HTML estático automaticamente com CSS crítico inline e JS on-demand!
+
+### 🧪 Testando a Nova Página Imediatamente:
+```bash
+# 1. Iniciar servidor local
+bun run dev
+
+# 2. Acesse no navegador:
+# http://localhost:3000/<slug>/
 ```
-
-### 4. Registre no `vite.config.ts` e `scripts/prerender.ts`:
-- No `vite.config.ts`, adicione na lista `rollupOptions.input`:
-  ```ts
-  lp4: resolve(__dirname, 'lp4/index.html'),
-  ```
-- No `scripts/prerender.ts`, adicione na lista `pages`:
-  ```ts
-  import Lp4 from '../src/pages/Lp4';
-  // ...
-  { name: 'LP 4 (/lp4)', htmlPath: path.join(distDir, 'lp4/index.html'), component: Lp4, chunkPrefix: 'lp4' },
-  ```
-
-Pronto! Ao rodar `bun run build`, a pasta `dist/lp4/index.html` será compilada estaticamente com CSS inline e JS on-demand.
 
 ---
 
@@ -371,6 +332,7 @@ O relatório exibirá:
 | `bun run dev` | Inicia o servidor local de desenvolvimento na porta 3000 |
 | `bun run build` | Compila TypeScript, roda o Vite e executa o SSG Prerender em todas as LPs |
 | `bun run preview` | Testa a pasta de produção `dist/` localmente |
+| `bun run criar-pagina <slug>` | Cria uma nova LP completa com pasta, HTML, entry e componente |
 | `bun run audit` | Executa a auditoria oficial Google PageSpeed Mobile |
 | `bun run sync-base` | Sincroniza o projeto com as últimas melhorias da base |
 | `./novo-cliente.sh <nome>` | Provisiona um novo projeto de cliente a partir do template |

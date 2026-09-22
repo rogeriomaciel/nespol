@@ -3,21 +3,61 @@ import { renderToString } from 'react-dom/server';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-// Páginas para pré-renderizar
-import Home from '../src/pages/Home';
-import Lp1 from '../src/pages/Lp1';
-import Lp2 from '../src/pages/Lp2';
-import Lp3 from '../src/pages/Lp3';
-
 const distDir = path.resolve(import.meta.dir, '../dist');
+const rootDir = path.resolve(import.meta.dir, '..');
 const assetsDir = path.join(distDir, 'assets');
+const pagesDir = path.join(rootDir, 'src/pages');
 
-const pages = [
-  { name: 'Home (/)', htmlPath: path.join(distDir, 'index.html'), component: Home, chunkPrefix: 'main' },
-  { name: 'LP 1 (/lp1)', htmlPath: path.join(distDir, 'lp1/index.html'), component: Lp1, chunkPrefix: 'lp1' },
-  { name: 'LP 2 (/lp2)', htmlPath: path.join(distDir, 'lp2/index.html'), component: Lp2, chunkPrefix: 'lp2' },
-  { name: 'LP 3 (/lp3)', htmlPath: path.join(distDir, 'lp3/index.html'), component: Lp3, chunkPrefix: 'lp3' },
-];
+function slugToPascalCase(slug: string): string {
+  return slug
+    .split('-')
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+}
+
+interface PageConfig {
+  name: string;
+  htmlPath: string;
+  componentPath: string;
+  chunkPrefix: string;
+}
+
+function getPagesToPrerender(): PageConfig[] {
+  const pages: PageConfig[] = [
+    {
+      name: 'Home (/)',
+      htmlPath: path.join(distDir, 'index.html'),
+      componentPath: path.join(pagesDir, 'Home.tsx'),
+      chunkPrefix: 'main'
+    }
+  ];
+
+  const entries = fs.readdirSync(rootDir);
+  const ignored = new Set(['node_modules', 'dist', 'src', 'scripts', 'public', '.git', '.github', 'expert']);
+
+  for (const entry of entries) {
+    if (ignored.has(entry) || entry.startsWith('.')) continue;
+    const dirPath = path.join(rootDir, entry);
+    const htmlFile = path.join(dirPath, 'index.html');
+
+    if (fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory() && fs.existsSync(htmlFile)) {
+      const pascal = slugToPascalCase(entry);
+      let compPath = path.join(pagesDir, `${pascal}.tsx`);
+      if (!fs.existsSync(compPath)) {
+        compPath = path.join(pagesDir, `${entry}.tsx`);
+      }
+
+      pages.push({
+        name: `Página /${entry}`,
+        htmlPath: path.join(distDir, entry, 'index.html'),
+        componentPath: compPath,
+        chunkPrefix: entry
+      });
+    }
+  }
+
+  return pages;
+}
 
 console.log('⚡ [SSG Prerender] Iniciando pré-renderização multi-páginas Core-Bare-Metal...');
 
@@ -32,34 +72,45 @@ if (fs.existsSync(assetsDir)) {
   }
 }
 
+const pages = getPagesToPrerender();
+
 for (const page of pages) {
   if (!fs.existsSync(page.htmlPath)) {
     console.warn(`⚠️ [SSG Prerender] ${page.htmlPath} não encontrado, pulando...`);
     continue;
   }
 
-  let html = fs.readFileSync(page.htmlPath, 'utf-8');
-
-  // 1. Renderizar React to String dentro do #root
-  const appHtml = renderToString(React.createElement(page.component));
-  html = html.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
-
-  // 2. Injetar Critical CSS inline (elimina CSS render-blocking no PageSpeed)
-  if (combinedCss) {
-    html = html.replace(/<link[^>]*rel=["']stylesheet["'][^>]*>/gi, '');
-    html = html.replace('</head>', `<style id="critical-css">\n${combinedCss}\n</style>\n</head>`);
+  if (!fs.existsSync(page.componentPath)) {
+    console.warn(`⚠️ [SSG Prerender] Componente ${page.componentPath} não encontrado, mantendo HTML gerado pelo Vite...`);
+    continue;
   }
 
-  // 3. Localizar o arquivo JS correspondente à página
-  if (fs.existsSync(assetsDir)) {
-    const assetFiles = fs.readdirSync(assetsDir);
-    const jsFile = assetFiles.find((f: string) => f.startsWith(page.chunkPrefix) && f.endsWith('.js'))
-                || assetFiles.find((f: string) => f.endsWith('.js'));
+  try {
+    const compModule = await import(page.componentPath);
+    const Component = compModule.default || compModule[Object.keys(compModule)[0]];
+    
+    let html = fs.readFileSync(page.htmlPath, 'utf-8');
 
-    if (jsFile) {
-      const relPath = page.chunkPrefix === 'main' ? `./assets/${jsFile}` : `../assets/${jsFile}`;
+    // 1. Renderizar React to String dentro do #root
+    const appHtml = renderToString(React.createElement(Component));
+    html = html.replace('<div id="root"></div>', `<div id="root">${appHtml}</div>`);
 
-      const loaderScript = `<script>
+    // 2. Injetar Critical CSS inline (elimina CSS render-blocking no PageSpeed)
+    if (combinedCss) {
+      html = html.replace(/<link[^>]*rel=["']stylesheet["'][^>]*>/gi, '');
+      html = html.replace('</head>', `<style id="critical-css">\n${combinedCss}\n</style>\n</head>`);
+    }
+
+    // 3. Localizar o arquivo JS correspondente à página
+    if (fs.existsSync(assetsDir)) {
+      const assetFiles = fs.readdirSync(assetsDir);
+      const jsFile = assetFiles.find((f: string) => f.startsWith(page.chunkPrefix) && f.endsWith('.js'))
+                  || assetFiles.find((f: string) => f.endsWith('.js'));
+
+      if (jsFile) {
+        const relPath = page.chunkPrefix === 'main' ? `./assets/${jsFile}` : `../assets/${jsFile}`;
+
+        const loaderScript = `<script>
 (function() {
   var loaded = false;
   function loadBundle() {
@@ -84,14 +135,17 @@ for (const page of pages) {
 })();
 </script>`;
 
-      // Remove script de módulo padrão para evitar bloqueio inicial
-      html = html.replace(/<script\s+type="module"[^>]*src=["'][^"']*assets\/[^"']*\.js["'][^>]*><\/script>/gi, '');
-      html = html.replace('</body>', `${loaderScript}\n</body>`);
+        // Remove script de módulo padrão para evitar bloqueio inicial
+        html = html.replace(/<script\s+type="module"[^>]*src=["'][^"']*assets\/[^"']*\.js["'][^>]*><\/script>/gi, '');
+        html = html.replace('</body>', `${loaderScript}\n</body>`);
+      }
     }
-  }
 
-  fs.writeFileSync(page.htmlPath, html);
-  console.log(`✅ [SSG Prerender] ${page.name} (${page.htmlPath}) pré-renderizado com sucesso!`);
+    fs.writeFileSync(page.htmlPath, html);
+    console.log(`✅ [SSG Prerender] ${page.name} (${page.htmlPath}) pré-renderizado com sucesso!`);
+  } catch (err) {
+    console.error(`❌ [SSG Prerender] Erro ao pré-renderizar ${page.name}:`, err);
+  }
 }
 
 console.log('⚡ [SSG Prerender] Concluído com êxito! Todas as páginas estáticas estão em dist/');

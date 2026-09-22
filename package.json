@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "bunx tsc && vite build && bun scripts/prerender.ts",
     "preview": "vite preview",
+    "criar-pagina": "bun scripts/criar-pagina.ts",
+    "nova-pagina": "bun scripts/criar-pagina.ts",
     "audit": "bun scripts/audit-pagespeed.ts",
     "sync-base": "./sync-base.sh",
     "novo-cliente": "./novo-cliente.sh"
