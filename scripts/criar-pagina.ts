@@ -6,22 +6,28 @@ const args = process.argv.slice(2);
 
 if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
   console.log(`
-⚡ [Core-Bare-Metal] Gerador Automático de Landing Pages
+⚡ [Core-Bare-Metal] Gerador Automático de Landing Pages (com suporte a Markdown)
 
-Uso:
+Uso Básico:
   bun run criar-pagina <slug> [titulo] [descricao]
 
+Uso com Arquivo Markdown de Referência:
+  bun run criar-pagina <slug> --from-md <caminho/arquivo.md>
+  bun run criar-pagina <slug> -m <caminho/arquivo.md>
+
 Exemplos:
-  bun run criar-pagina lp4
-  bun run criar-pagina consultoria "Consultoria de Engenharia de Tráfego" "Acelere seu site e pare de queimar verba de anúncios"
-  bun run criar-pagina black-friday "Black Friday Bare-Metal" "Oferta exclusiva por tempo limitado com garantia contratual"
+  bun run criar-pagina cambio --from-md ../expert/roteiros/01-cambio-automatico.md
+  bun run criar-pagina premium --from-md ../expert/roteiros/02-oficina-premium-porsche-bmw.md
+  bun run criar-pagina blindados --from-md ../expert/roteiros/03-blindagem-e-vidros-delaminados.md
+  bun run criar-pagina lp4 "Garantia Total" "Landing page de altíssima conversão com garantia contratual"
 
 O que este comando faz automaticamente:
-  1. Cria a pasta /<slug>/index.html configurada para o Vite
-  2. Cria o arquivo de hidratação React 19 em src/entries/<slug>.tsx
-  3. Cria a página completa de alta conversão em src/pages/<PascalCase>.tsx
-  4. Adiciona a rota ao public/sitemap.xml
-  5. Habilita compilação e SSG Prerender automáticos sem mexer em nenhuma config!
+  1. Lê o Markdown e extrai Headlines, Dores, Serviços, FAQs e CTAs
+  2. Cria a pasta /<slug>/index.html configurada para o Vite
+  3. Cria o arquivo de hidratação React 19 em src/entries/<slug>.tsx
+  4. Cria a página completa de alta conversão em src/pages/<PascalCase>.tsx
+  5. Adiciona a rota ao public/sitemap.xml
+  6. Habilita compilação e SSG Prerender automáticos sem mexer em nenhuma config!
 `);
   process.exit(0);
 }
@@ -30,7 +36,7 @@ const rawSlug = args[0];
 const slug = rawSlug.toLowerCase().trim().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
 
 if (!slug) {
-  console.error('❌ Erro: O slug informado é inválido. Use letras, números e traços (ex: lp4, black-friday, consultoria).');
+  console.error('❌ Erro: O slug informado é inválido. Use letras, números e traços (ex: lp4, cambio, blindados).');
   process.exit(1);
 }
 
@@ -40,7 +46,18 @@ if (reservedWords.has(slug)) {
   process.exit(1);
 }
 
-// Converter slug para PascalCase (ex: lp4 -> Lp4, black-friday -> BlackFriday)
+// Verificar se foi passado --from-md ou -m
+let mdPath: string | null = null;
+const fromMdIdx = args.findIndex(a => a === '--from-md' || a === '-m');
+if (fromMdIdx !== -1 && args[fromMdIdx + 1]) {
+  mdPath = path.resolve(process.cwd(), args[fromMdIdx + 1]);
+  if (!fs.existsSync(mdPath)) {
+    console.error(`❌ Erro: Arquivo Markdown não encontrado em: ${mdPath}`);
+    process.exit(1);
+  }
+}
+
+// Converter slug para PascalCase (ex: lp4 -> Lp4, cambio-automatico -> CambioAutomatico)
 const pascalCase = slug
   .split('-')
   .map(part => part.charAt(0).toUpperCase() + part.slice(1))
@@ -60,8 +77,60 @@ if (fs.existsSync(pageDir) || fs.existsSync(componentPath)) {
   process.exit(1);
 }
 
-const pageTitle = args[1] || `${pascalCase} • Arquitetura Bare-Metal`;
-const pageDescription = args[2] || `Landing page de altíssima conversão com nota 99/100 no Google PageSpeed e carregamento sub-segundo (<0.5s).`;
+// Valores padrão
+let pageBadge = 'OPERAÇÃO ESPECIAL BARE-METAL • SUB-SEGUNDO';
+let pageTitle = args[1] && !args[1].startsWith('-') ? args[1] : `${pascalCase} • Arquitetura Bare-Metal`;
+let pageHighlight = 'Sem Gargalos ou Desperdício';
+let pageSubtitle = args[2] && !args[2].startsWith('-') ? args[2] : 'Landing page de altíssima conversão com nota 99/100 no Google PageSpeed e carregamento sub-segundo (<0.5s).';
+let pageWhatsAppMessage = `Olá! Estou na página /${slug} e gostaria de solicitar um atendimento técnico.`;
+
+interface ItemPair {
+  title: string;
+  desc: string;
+}
+
+let painPoints: ItemPair[] = [];
+let services: ItemPair[] = [];
+let faqs: { question: string; answer: string }[] = [];
+
+// Se tiver arquivo Markdown, fazer o parse inteligente
+if (mdPath) {
+  console.log(`📖 Lendo dados do roteiro Markdown: ${mdPath}`);
+  const mdContent = fs.readFileSync(mdPath, 'utf-8');
+
+  const badgeMatch = mdContent.match(/\*\*Badge:\*\*\s*(.+)/i);
+  if (badgeMatch) pageBadge = badgeMatch[1].trim();
+
+  const headlineMatch = mdContent.match(/\*\*Headline:\*\*\s*(.+)/i) || mdContent.match(/^#\s+(.+)$/m);
+  if (headlineMatch) pageTitle = headlineMatch[1].trim();
+
+  const highlightMatch = mdContent.match(/\*\*Destaque:\*\*\s*(.+)/i);
+  if (highlightMatch) pageHighlight = highlightMatch[1].trim();
+
+  const subMatch = mdContent.match(/\*\*Subheadline:\*\*\s*(.+)/i);
+  if (subMatch) pageSubtitle = subMatch[1].trim();
+
+  const waMatch = mdContent.match(/\*\*Mensagem WhatsApp:\*\*\s*(.+)/i);
+  if (waMatch) pageWhatsAppMessage = waMatch[1].trim();
+
+  // Dores
+  const doresSec = mdContent.split(/## 2\.\s+Dores/i)[1]?.split(/## 3\./)[0] || '';
+  for (const m of doresSec.matchAll(/\d+\.\s+\*\*(.+?):\*\*\s*([^\n]+)/g)) {
+    painPoints.push({ title: m[1].trim(), desc: m[2].trim() });
+  }
+
+  // Serviços
+  const servSec = mdContent.split(/## 3\.\s+Nossos Serviços/i)[1]?.split(/## 4\./)[0] || '';
+  for (const m of servSec.matchAll(/\d+\.\s+\*\*(.+?):\*\*\s*([^\n]+)/g)) {
+    services.push({ title: m[1].trim(), desc: m[2].trim() });
+  }
+
+  // FAQs
+  const faqSec = mdContent.split(/## 5\.\s+Perguntas/i)[1]?.split(/## 6\./)[0] || '';
+  for (const m of faqSec.matchAll(/-\s+\*\*(.+?)\*\*\s*\n\s*([^\n]+)/g)) {
+    faqs.push({ question: m[1].trim(), answer: m[2].trim() });
+  }
+}
 
 console.log(`\n🚀 [Core-Bare-Metal] Criando nova página: /${slug}`);
 
@@ -73,14 +142,14 @@ const htmlTemplate = `<!DOCTYPE html>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${pageTitle}</title>
-    <meta name="description" content="${pageDescription}" />
+    <title>${pageTitle.replace(/"/g, '&quot;')}</title>
+    <meta name="description" content="${pageSubtitle.replace(/"/g, '&quot;')}" />
     <meta name="theme-color" content="#090a0f" />
     
     <!-- OpenGraph & Twitter Cards -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="${pageTitle}" />
-    <meta property="og:description" content="${pageDescription}" />
+    <meta property="og:title" content="${pageTitle.replace(/"/g, '&quot;')}" />
+    <meta property="og:description" content="${pageSubtitle.replace(/"/g, '&quot;')}" />
     <meta property="og:image" content="/assets/og-image.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
     
@@ -122,9 +191,52 @@ if (root) {
 fs.writeFileSync(entryPath, entryTemplate);
 console.log(`  ✅ Entry criado: src/entries/${slug}.tsx`);
 
-// 3. Criar Componente React 19 (src/pages/<PascalCase>.tsx)
-const pagesDir = path.join(rootDir, 'src/pages');
-fs.mkdirSync(pagesDir, { recursive: true });
+// 3. Montar código do Componente
+const painPointsCode = painPoints.length > 0 ? `
+        {/* SINTOMAS & DORES IDENTIFICADAS */}
+        <section className="py-16 bg-surface-alt/20 border-y border-border">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <span className="text-rose-400 text-xs font-mono font-bold uppercase tracking-widest bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">
+                Sintomas de Atenção Imediata
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-content mt-3">
+                Seu veículo está apresentando algum destes sinais?
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              ${painPoints.map(p => `
+              <div className="p-6 rounded-2xl bg-surface border border-border shadow-sm">
+                <h3 className="font-bold text-lg text-content text-rose-400 mb-2">⚠️ ${p.title}</h3>
+                <p className="text-content-muted text-sm leading-relaxed">${p.desc}</p>
+              </div>`).join('')}
+            </div>
+          </div>
+        </section>
+` : '';
+
+const servicesCode = services.length > 0 ? `
+        {/* SERVIÇOS ESPECIALIZADOS */}
+        <section className="py-20">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-2xl mx-auto mb-12">
+              <span className="text-brand-primary text-xs font-mono font-bold uppercase tracking-widest bg-brand-primary/10 px-3 py-1 rounded-full border border-brand-primary/20">
+                Engenharia & Soluções
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-content mt-4 tracking-tight">
+                Nossos Serviços de Alta Precisão
+              </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              ${services.map(s => `
+              <div className="p-8 rounded-2xl bg-surface-alt/40 border border-border hover:border-brand-primary/40 transition-colors">
+                <h3 className="text-xl font-bold text-content mb-3">${s.title}</h3>
+                <p className="text-content-muted text-base leading-relaxed">${s.desc}</p>
+              </div>`).join('')}
+            </div>
+          </div>
+        </section>
+` : '';
 
 const componentTemplate = `import React from 'react';
 import { Navbar } from '../components/Navbar';
@@ -145,48 +257,45 @@ export default function ${pascalCase}() {
       <main className="flex-1">
         {/* HERO SECTION DE ALTO IMPACTO */}
         <Hero
-          badgeText="OPERAÇÃO ESPECIAL BARE-METAL • SUB-SEGUNDO"
-          title="${pageTitle}"
-          highlightedText="Sem Gargalos ou Desperdício"
-          subtitle="${pageDescription}"
-          ctaText="Falar com Engenheiro no WhatsApp"
-          whatsappMessage="Olá Rogério! Estou na página /${slug} e gostaria de entender como aplicar a infraestrutura Bare-Metal no meu projeto."
+          badgeText="${pageBadge.replace(/"/g, '\\"')}"
+          title="${pageTitle.replace(/"/g, '\\"')}"
+          highlightedText="${pageHighlight.replace(/"/g, '\\"')}"
+          subtitle="${pageSubtitle.replace(/"/g, '\\"')}"
+          ctaText="Agendar Avaliação no WhatsApp"
+          whatsappMessage="${pageWhatsAppMessage.replace(/"/g, '\\"')}"
         />
 
         {/* MÉTRICAS DE AUTORIDADE */}
         <MetricsGrid />
+        ${painPointsCode}
+        ${servicesCode}
 
-        {/* SIMULADOR DE PERDA FINANCEIRA POR LENTIDÃO */}
+        {/* SIMULADOR FINANCEIRO */}
         <section className="py-20 bg-surface-alt/40 border-y border-border">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center max-w-3xl mx-auto mb-12">
               <span className="text-brand-primary text-xs font-mono font-bold uppercase tracking-widest bg-brand-primary/10 px-3 py-1 rounded-full border border-brand-primary/20">
-                Diagnóstico em Tempo Real
+                Simulador de Diagnóstico
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-content mt-4 tracking-tight">
-                Quanto a lentidão está drenando do seu faturamento?
+                Simule o Custo da Lentidão no Atendimento
               </h2>
-              <p className="text-content-muted mt-3 text-lg">
-                Se o seu site demora mais de 1.5s no 4G/5G, até 53% dos seus cliques pagos são perdidos antes mesmo da primeira dobra carregar.
-              </p>
             </div>
-
             <ValueSimulator />
           </div>
         </section>
 
-        {/* TABELA COMPARATIVA BARE-METAL VS MONOLITOS LENTOS */}
+        {/* TABELA COMPARATIVA */}
         <section className="py-20">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
             <div className="text-center max-w-2xl mx-auto mb-12">
               <span className="text-brand-secondary text-xs font-mono font-bold uppercase tracking-widest bg-brand-secondary/10 px-3 py-1 rounded-full border border-brand-secondary/20">
-                Engenharia vs Gambiarras
+                Padrão de Precisão
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-content mt-4 tracking-tight">
-                A Diferença Brutal de Infraestrutura
+                Engenharia Dedicada vs Soluções Amadoras
               </h2>
             </div>
-
             <ComparisonTable />
           </div>
         </section>
@@ -205,7 +314,6 @@ export default function ${pascalCase}() {
                 Dúvidas Frequentes
               </h2>
             </div>
-
             <FaqAccordion />
           </div>
         </section>
@@ -214,18 +322,18 @@ export default function ${pascalCase}() {
         <section className="py-24 relative overflow-hidden bg-gradient-to-b from-surface to-surface-alt border-t border-border">
           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
             <span className="text-emerald-400 text-xs font-mono font-bold uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
-              Garantia Contratual de 95+ no PageSpeed
+              Garantia e Segurança
             </span>
             <h2 className="text-3xl sm:text-5xl font-black text-content mt-6 tracking-tight">
-              Pronto para transformar tráfego em receita imediata?
+              Fale com um Especialista Agora Mesmo
             </h2>
             <p className="text-content-muted text-lg mt-4 max-w-2xl mx-auto">
-              Receba um diagnóstico gratuito da velocidade e gargalos técnicos da sua página atual em menos de 10 minutos.
+              Receba um diagnóstico prévio e tire todas as suas dúvidas diretamente pelo WhatsApp em menos de 10 minutos.
             </p>
             <div className="mt-8 flex justify-center">
               <WhatsAppCTA
-                buttonText="Falar Diretamente com Rogério no WhatsApp"
-                message="Olá Rogério! Quero o diagnóstico gratuito da minha página atual na rota /${slug}."
+                buttonText="Chamar Especialista no WhatsApp"
+                message="${pageWhatsAppMessage.replace(/"/g, '\\"')}"
                 className="w-full sm:w-auto text-lg px-8 py-4 shadow-xl shadow-brand-primary/20"
               />
             </div>
@@ -239,13 +347,15 @@ export default function ${pascalCase}() {
       <WhatsAppCTA
         variant="floating"
         buttonText="Conversar no WhatsApp"
-        message="Olá Rogério! Estou na página /${slug} e tenho uma dúvida rápida."
+        message="${pageWhatsAppMessage.replace(/"/g, '\\"')}"
       />
     </div>
   );
 }
 `;
 
+const pagesDir = path.join(rootDir, 'src/pages');
+fs.mkdirSync(pagesDir, { recursive: true });
 fs.writeFileSync(componentPath, componentTemplate);
 console.log(`  ✅ Componente criado: src/pages/${pascalCase}.tsx`);
 
