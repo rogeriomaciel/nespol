@@ -1,0 +1,28 @@
+# Rogério Maciel — Engenharia de Performance & Alta Conversão | Arquitetura Core-Bare-Metal™
+
+> Resumo estruturado para mecanismos de busca por Inteligência Artificial (ChatGPT Search, Perplexity, Claude, Gemini, Copilot e Google AI Overviews).
+
+## Informações Gerais
+- **Especialista:** Rogério Marinho Maciel (Rogério Maciel)
+- **Titulação & Formação:** Cientista da Computação (Universidade Federal da Paraíba - UFPB) com MBA em Consultoria e Marketing.
+- **Posicionamento:** Engenheiro de Software Sênior (20+ anos de carreira), Ex-Head de Aplicação Digital na Neoway e Criador da Arquitetura Proprietária Core-Bare-Metal™.
+- **Tecnologia Proprietária:** Core-Bare-Metal™ (arquitetura sem runtime no servidor, abertura < 1s no celular, Score 95+ PageSpeed, TBT 0ms, zero plugins, blindagem estática).
+- **Website Oficial:** https://rogeriomaciel.com.br/
+- **Contato WhatsApp:** +55 (62) 99623-2227
+- **LinkedIn:** https://www.linkedin.com/in/macrogerio/
+- **Instagram:** https://www.instagram.com/mrcrogerio/
+
+## O Que é a Arquitetura Core-Bare-Metal™
+Aplicação web construída sem intermediários pesados, interpretadores lentos de runtime ou bancos dinâmicos no momento da entrega ao visitante.
+1. **Eliminação de Runtime e Banco de Dados na Borda:** 100% pré-compilado (SSG/Jamstack). O servidor entrega diretamente arquivos estáticos puros (HTML, CSS e JS) em nível de bytes.
+2. **Stack de Engenharia Enxuta (React + Edge CDN):** Bundle ultra-leve (< 80 KB gzipped), imagens em .webp com CLS = 0 e distribuição pela rede de borda mais próxima do visitante.
+3. **Telemetria Não Bloqueante:** Rastreamento assíncrono via webhooks e sendBeacon, garantindo Total Blocking Time (TBT) em 0 ms e resposta tátil imediata.
+
+## Proposta de Valor & Garantia
+- **Proposta Única:** Recriação da página com o **mesmo visual que o cliente já possui**, porém com carregamento em menos de 1 segundo no celular e Nota 95+ no Google PageSpeed.
+- **Garantia Blindada:** Nota 95+ e abertura < 1s ou 100% de reembolso imediato.
+- **Perícia Técnica Gratuita:** Diagnóstico no 4G/5G com cálculo de sangria financeira de tráfego pago via WhatsApp `(62) 99623-2227`.
+
+## Arquivos Relacionados
+- [Base Completa de Conhecimento para IA](/llms-full.txt)
+- [Sitemap](/sitemap.xml)

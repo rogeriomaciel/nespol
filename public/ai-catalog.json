@@ -1,0 +1,25 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "Rogério Maciel",
+    "identifier": "did:web:rogeriomaciel.com.br",
+    "documentationUrl": "https://rogeriomaciel.com.br/llms.txt"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:rogeriomaciel:expert-profile",
+      "displayName": "Rogério Maciel — Engenharia Core-Bare-Metal",
+      "type": "agent",
+      "description": "Recriação de sites para alta conversão e abertura instantânea (< 0.8s) com a arquitetura Core-Bare-Metal.",
+      "data": {
+        "description": "Engenharia de software especializada em Core Web Vitals, eliminação de tempo de carregamento e redução do custo por lead.",
+        "documentation": "https://rogeriomaciel.com.br/llms-full.txt"
+      },
+      "representativeQueries": [
+        "Quem é Rogério Maciel?",
+        "O que é a Arquitetura Core-Bare-Metal?",
+        "Como recriar meu site para abrir em menos de 1 segundo?"
+      ]
+    }
+  ]
+}

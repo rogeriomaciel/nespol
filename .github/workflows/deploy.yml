@@ -1,0 +1,64 @@
+name: 🚀 CI/CD Deploy Estático para VPS
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    name: Compilar e Publicar na VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repositório
+        uses: actions/checkout@v4
+
+      - name: ⚡ Configurar Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: 📦 Instalar dependências
+        run: bun install
+
+      - name: 🛠️ Compilar site e páginas estáticas (dist/)
+        run: bun run build
+
+      - name: 📂 Garantir diretório de destino e permissões na VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_VPS_IP || secrets.VPS_HOST }}
+          username: ${{ secrets.DEPLOY_VPS_USER || secrets.DEPLOY_USER || secrets.VPS_USERNAME }}
+          password: ${{ secrets.DEPLOY_VPS_PASS || secrets.DEPLOY_USERPASSWORD || secrets.VPS_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY || secrets.VPS_SSH_KEY }}
+          script: |
+            TARGET_DIR="${{ secrets.DEPLOY_REMOTE_DIR || secrets.DEPLOY_PATH || format('/var/www/{0}', github.event.repository.name) }}"
+            sudo mkdir -p "$TARGET_DIR" 2>/dev/null || mkdir -p "$TARGET_DIR"
+            sudo chown -R $(whoami) "$TARGET_DIR" 2>/dev/null || true
+            sudo chmod -R 777 "$TARGET_DIR" 2>/dev/null || chmod -R 777 "$TARGET_DIR" 2>/dev/null || true
+            rm -rf "$TARGET_DIR"/* 2>/dev/null || true
+
+      - name: 📤 Enviar arquivos da pasta dist/ para a VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEPLOY_VPS_IP || secrets.VPS_HOST }}
+          username: ${{ secrets.DEPLOY_VPS_USER || secrets.DEPLOY_USER || secrets.VPS_USERNAME }}
+          password: ${{ secrets.DEPLOY_VPS_PASS || secrets.DEPLOY_USERPASSWORD || secrets.VPS_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY || secrets.VPS_SSH_KEY }}
+          source: "dist/**"
+          strip_components: 1
+          overwrite: true
+          target: ${{ secrets.DEPLOY_REMOTE_DIR || secrets.DEPLOY_PATH || format('/var/www/{0}', github.event.repository.name) }}
+
+      - name: 🔒 Ajustar permissões web na VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEPLOY_VPS_IP || secrets.VPS_HOST }}
+          username: ${{ secrets.DEPLOY_VPS_USER || secrets.DEPLOY_USER || secrets.VPS_USERNAME }}
+          password: ${{ secrets.DEPLOY_VPS_PASS || secrets.DEPLOY_USERPASSWORD || secrets.VPS_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY || secrets.VPS_SSH_KEY }}
+          script: |
+            TARGET_DIR="${{ secrets.DEPLOY_REMOTE_DIR || secrets.DEPLOY_PATH || format('/var/www/{0}', github.event.repository.name) }}"
+            chmod -R 755 "$TARGET_DIR"
