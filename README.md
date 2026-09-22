@@ -2,7 +2,7 @@
 
 > **Repositório Template Oficial da Arquitetura Core-Bare-Metal™**  
 > Engenharia de software de alta performance para criação, replicação e hospedagem de Landing Pages e sites ultrarrápidos para clientes.  
-> **Score 99/100 no Google PageSpeed Mobile • LCP < 0.5s • TBT 0ms • Multi-Páginas TSX Nativo • Deploy Automatizado para VPS.**
+> **Score 99/100 no Google PageSpeed Mobile • LCP < 0.5s • TBT 0ms • Multi-Páginas TSX Nativo • SEO & GEO para IA • Deploy Automatizado para VPS.**
 
 ---
 
@@ -17,12 +17,13 @@
 7. [Deploy Contínuo (CI/CD) para VPS via GitHub Actions](#-deploy-contínuo-cicd-para-vps)
 8. [Configuração Recomendada do Nginx na VPS](#-configuração-recomendada-do-nginx-na-vps)
 9. [Como Sincronizar Melhorias da Base (`sync-base.sh`)](#-como-sincronizar-melhorias-da-base)
-10. [Auditoria Automatizada Google PageSpeed](#-auditoria-automatizada-google-pagespeed)
-11. [Comandos Rápidos (Exclusivo Bun)](#-comandos-rápidos-exclusivo-bun)
+10. [Otimização de SEO, GEO e LLMs (IA Search)](#-otimização-de-seo-geo-e-llms-ia-search)
+11. [Auditoria Automatizada Google PageSpeed](#-auditoria-automatizada-google-pagespeed)
+12. [Comandos Rápidos (Exclusivo Bun)](#-comandos-rápidos-exclusivo-bun)
 
 ---
 
-## ��️ Filosofia & Vantagem Competitiva
+## 🏛️ Filosofia & Vantagem Competitiva
 
 A esmagadora maioria dos sites desenvolvidos por agências tradicionais utiliza WordPress, Elementor e dezenas de plugins de terceiros. Isso resulta em:
 - **8 a 14 segundos de espera no 4G/5G móvel**.
@@ -42,10 +43,18 @@ Diferente de modelos restritos a uma única página ou arquivos Markdown que pre
 
 ```
 /
-├── index.html                    # HTML de entrada da Home Flagship
+├── index.html                    # HTML de entrada da Home Flagship (com SEO, GEO e Schema.org)
 ├── lp1/index.html                # HTML de entrada da LP 1 (Dor & Urgência)
 ├── lp2/index.html                # HTML de entrada da LP 2 (Oferta & Perícia)
 ├── lp3/index.html                # HTML de entrada da LP 3 (Garantia Blindada)
+├── public/
+│   ├── .well-known/              # ai-catalog.json e ard.json (Agentic Resource Discovery)
+│   ├── llms.txt                  # Resumo executivo para LLMs e IAs
+│   ├── llms-full.txt             # Base profunda de conhecimento para LLMs
+│   ├── robots.txt                # Regras para bots convencionais e crawlers de IA
+│   ├── sitemap.xml               # Mapeamento canônico
+│   ├── favicon.svg               # Ícone SVG de alta nitidez
+│   └── og-image.jpg              # Imagem para preview no WhatsApp e redes
 ├── src/
 │   ├── config/
 │   │   └── site.config.ts        # Dados globais (Nome, WhatsApp, GTM, etc.)
@@ -296,6 +305,45 @@ O script:
 
 ---
 
+## 🤖 Otimização de SEO, GEO e LLMs (IA Search)
+
+O template vem de fábrica com o ecossistema completo de **GEO (Generative Engine Optimization)** e **SEO Técnico de Elite**, garantindo indexação máxima tanto no Google tradicional quanto nos novos buscadores baseados em Inteligência Artificial (ChatGPT Search, Perplexity AI, Claude, Google Gemini e Apple Intelligence):
+
+### 1. Arquivos de Descoberta por IA (`public/`)
+- **`public/llms.txt`**: Resumo em Markdown enxuto e semântico estruturado para consumo rápido por agentes e robôs de IA que precisam citar a empresa.
+- **`public/llms-full.txt`**: Base de conhecimento profunda contendo a metodologia, diferenciais técnicos, cases, métricas e FAQs completas.
+- **`public/.well-known/ai-catalog.json`**: Catálogo estruturado de endpoints e serviços disponíveis no site para LLMs.
+- **`public/.well-known/ard.json`**: Especificação oficial de *Agentic Resource Discovery* (ARD).
+
+### 2. Diretrizes Cirúrgicas de Crawlers (`public/robots.txt`)
+O arquivo `robots.txt` autoriza explicitamente e direciona os crawlers de inteligência artificial mais relevantes:
+- `GPTBot` e `ChatGPT-User` (OpenAI / ChatGPT)
+- `PerplexityBot` (Perplexity AI)
+- `ClaudeBot` e `Claude-Web` (Anthropic / Claude)
+- `Google-Extended` (Google Gemini e Google AI Overviews)
+- `Applebot-Extended` (Apple Intelligence / Siri)
+- `Amazonbot` (Amazon AI)
+- `meta-externalagent` (Meta AI)
+- Apontamento automático para `sitemap.xml`.
+
+### 3. Dados Estruturados Schema.org JSON-LD (Rich Snippets)
+O `index.html` injeta no `<head>` um grafo Schema.org completo contendo:
+- **`WebSite`**: Configuração canônica do site e idioma oficial (`pt-BR`).
+- **`Person` / `Organization`**: Identificação da autoridade responsável (com formação, experiência e links sociais oficiais como LinkedIn e Instagram).
+- **`ProfessionalService`**: Dados comerciais (telefone direto de atendimento, país, moeda e faixa de preço).
+- **`FAQPage`**: Mapeamento oficial de perguntas e respostas, permitindo que o Google exiba o bloco expansível de FAQ diretamente na página de resultados de busca orgânica.
+
+### 4. Metatags OpenGraph & Twitter Cards Enriquecidos
+- Preview profissional com imagem em alta resolução (`og:image.jpg`), títulos persuasivos e descrições otimizadas para compartilhamentos no WhatsApp, Telegram, LinkedIn e Facebook.
+- Diretivas de indexação avançada: `robots: max-snippet:-1, max-image-preview:large, max-video-preview:-1`.
+
+### 🛠️ Como Customizar o SEO/GEO para um Novo Cliente:
+1. Abra `public/llms.txt` e `public/llms-full.txt` e substitua os dados pelo resumo do negócio do cliente.
+2. No `index.html`, atualize as entidades do script `application/ld+json` (`ProfessionalService`, nome da empresa, telefone e FAQs do nicho do cliente).
+3. No `public/sitemap.xml`, altere o domínio para a URL de produção do cliente.
+
+---
+
 ## 🔍 Auditoria Automatizada Google PageSpeed
 
 Para auditar oficialmente a performance no Google Lighthouse Mobile via API oficial:
@@ -315,7 +363,7 @@ O relatório exibirá:
 
 ---
 
-## 📋 Comandos Rápidos (Exclusivo Bun)
+## �� Comandos Rápidos (Exclusivo Bun)
 
 | Comando | Descrição |
 | :--- | :--- |
