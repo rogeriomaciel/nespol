@@ -1,109 +1,139 @@
 import { useState } from 'react';
-import { ThemeToggle } from './ThemeToggle';
-import { MenuIcon, XIcon, WhatsAppIcon, ZapIcon } from './Icons';
-import { siteConfig, getWhatsAppUrl } from '../config/site.config';
-
-export interface NavLink {
-  label: string;
-  href: string;
-}
+import { MenuIcon, XIcon, YouTubeIcon, ZapIcon } from './Icons';
+import { siteConfig } from '../config/site.config';
 
 interface NavbarProps {
-  brandName?: string;
-  links?: NavLink[];
-  whatsappMessage?: string;
   ctaText?: string;
 }
 
-export function Navbar({
-  brandName = siteConfig.name,
-  links = [
-    { label: 'Benefícios', href: '#beneficios' },
-    { label: 'Comparativo', href: '#comparativo' },
-    { label: 'Métricas', href: '#metricas' },
-    { label: 'Dúvidas', href: '#faq' },
-  ],
-  whatsappMessage = siteConfig.defaultWhatsAppMessage,
-  ctaText = 'Falar no WhatsApp',
-}: NavbarProps) {
+export function Navbar({ ctaText = 'FAZER INSCRIÇÃO' }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const waUrl = getWhatsAppUrl(whatsappMessage);
 
   return (
-    <header className="sticky top-0 z-50 w-full glass-nav transition-all duration-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand */}
-        <a href="#" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform duration-200">
-            <ZapIcon className="w-5 h-5" />
-          </div>
-          <span className="font-extrabold text-lg tracking-tight text-slate-900 dark:text-white">
-            {brandName}
-          </span>
-        </a>
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600 dark:text-slate-300">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Actions */}
-        <div className="flex items-center gap-3">
-          <ThemeToggle />
-
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm shadow-emerald-600/30 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
-          >
-            <WhatsAppIcon className="w-4 h-4" />
-            <span>{ctaText}</span>
+    <header className="sticky top-0 z-50 w-full glass-nav transition-all">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          
+          {/* Logo Nespol */}
+          <a href="#" className="flex items-center gap-3 group">
+            <img
+              src="/images/nespol/LOGO-NESPOL-P-TRANSPARENTE.webp"
+              alt="Nespol Logo"
+              width={140}
+              height={42}
+              className="h-10 w-auto object-contain transition-transform group-hover:scale-105"
+            />
           </a>
 
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80"
-            aria-label="Alternar menu"
-          >
-            {mobileMenuOpen ? <XIcon className="w-5 h-5" /> : <MenuIcon className="w-5 h-5" />}
-          </button>
+          {/* Nav Links Desktop */}
+          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-300">
+            <a href="#beneficios" className="hover:text-[#F6DB17] transition-colors">O que Você Aprende</a>
+            <a href="#modulos" className="hover:text-[#F6DB17] transition-colors">Módulos</a>
+            <a href="#bonus" className="hover:text-[#F6DB17] transition-colors flex items-center gap-1.5">
+              <span>Bônus</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-[#F6DB17]/20 text-[#F6DB17]">GRÁTIS</span>
+            </a>
+            <a href="#vantagens" className="hover:text-[#F6DB17] transition-colors">Vantagens</a>
+            <a href="#depoimentos" className="hover:text-[#F6DB17] transition-colors">Alunos</a>
+            <a href="#faq" className="hover:text-[#F6DB17] transition-colors">Dúvidas</a>
+          </nav>
+
+          {/* Social Proof + CTA */}
+          <div className="hidden sm:flex items-center gap-4">
+            <a
+              href={siteConfig.youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white hover:border-red-500/40 transition-colors"
+            >
+              <YouTubeIcon className="w-4 h-4 text-red-500" />
+              <span>{siteConfig.subscribersYoutube} Inscritos</span>
+            </a>
+
+            <a
+              href="#oferta"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-[#F6DB17] hover:bg-[#E5CB0D] text-black shadow-lg shadow-[#F6DB17]/20 transition-all hover:scale-105"
+            >
+              <ZapIcon className="w-4 h-4 fill-black text-black" />
+              <span>{ctaText}</span>
+            </a>
+          </div>
+
+          {/* Mobile menu trigger */}
+          <div className="flex lg:hidden items-center gap-2">
+            <a
+              href="#oferta"
+              className="px-3.5 py-2 rounded-lg text-xs font-bold bg-[#F6DB17] text-black shadow-sm"
+            >
+              INSCREVER
+            </a>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg text-slate-400 hover:text-white bg-slate-900 border border-slate-800"
+              aria-label="Abrir menu"
+            >
+              {mobileMenuOpen ? <XIcon className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl px-4 py-4 space-y-3 animate-in fade-in">
-          {links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-base font-medium text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400"
-            >
-              {link.label}
-            </a>
-          ))}
+        <div className="lg:hidden border-b border-slate-800 bg-[#0B0F17]/95 backdrop-blur-xl px-4 pt-3 pb-6 space-y-3 animate-fadeIn">
           <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#beneficios"
             onClick={() => setMobileMenuOpen(false)}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-base font-semibold bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:bg-slate-900 hover:text-[#F6DB17]"
           >
-            <WhatsAppIcon className="w-5 h-5" />
-            <span>{ctaText}</span>
+            O que Você Aprende
           </a>
+          <a
+            href="#modulos"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:bg-slate-900 hover:text-[#F6DB17]"
+          >
+            Módulos da Área de Membros
+          </a>
+          <a
+            href="#bonus"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:bg-slate-900 hover:text-[#F6DB17]"
+          >
+            Bônus Exclusivos
+          </a>
+          <a
+            href="#vantagens"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:bg-slate-900 hover:text-[#F6DB17]"
+          >
+            Vantagens & Acesso Vitalício
+          </a>
+          <a
+            href="#depoimentos"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:bg-slate-900 hover:text-[#F6DB17]"
+          >
+            Avaliações dos Alunos
+          </a>
+          <a
+            href="#faq"
+            onClick={() => setMobileMenuOpen(false)}
+            className="block px-3 py-2 rounded-lg text-base font-medium text-slate-300 hover:bg-slate-900 hover:text-[#F6DB17]"
+          >
+            Dúvidas Frequentes
+          </a>
+
+          <div className="pt-2">
+            <a
+              href="#oferta"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold bg-[#F6DB17] text-black text-center shadow-lg"
+            >
+              <ZapIcon className="w-5 h-5 fill-black text-black" />
+              <span>GARANTIR ACESSO VITALÍCIO</span>
+            </a>
+          </div>
         </div>
       )}
     </header>

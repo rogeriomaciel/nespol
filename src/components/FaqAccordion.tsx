@@ -1,43 +1,43 @@
 import { useState } from 'react';
-import { ChevronDownIcon, HelpCircleIcon } from './Icons';
+import { ChevronDownIcon } from './Icons';
 
-export interface FaqItem {
+interface FaqItem {
   question: string;
   answer: string;
 }
 
-interface FaqAccordionProps {
-  title?: string;
-  subtitle?: string;
-  items?: FaqItem[];
-}
+const faqs: FaqItem[] = [
+  {
+    question: 'Como Comprar o Acesso a Área de Membros?',
+    answer: 'Para comprar o Acesso a Área de Membros Vitalícia, basta acessar o botão acima escrito: FAÇA SUA INSCRIÇÃO AGORA. Depois é só preencher seus dados de pagamento e concluir a compra. Os dados de acesso serão enviados imediatamente em seu email logo após a confirmação da compra, e você poderá começar a assistir suas aulas agora mesmo!',
+  },
+  {
+    question: 'Como fazer o pagamento da Área de Membros?',
+    answer: 'Ao clicar no botão: FAÇA SUA INSCRIÇÃO AGORA, você poderá escolher entre os meios de pagamento disponíveis: Cartão, Boleto ou Pix. Para realizar o pagamento, basta preencher seus dados corretamente. Ao comprar por Cartão ou Pix o acesso será enviado imediatamente ao seu email. Em caso de pagamento por boleto, pode demorar até 2 dias úteis para compensação.',
+  },
+  {
+    question: 'Quantas vezes posso assistir as aulas?',
+    answer: 'Pode assistir as aulas quantas vezes precisar com acesso vitalício. As aulas são bem explicadas, mas caso surgir dúvidas, pode voltar e assistir novamente.',
+  },
+  {
+    question: 'O Pagamento é seguro?',
+    answer: 'Sim, o pagamento é seguro! Usamos a plataforma Kiwify para gerenciar e administrar os pagamentos. Todas as transações são criptografadas e protegidas.',
+  },
+  {
+    question: 'Como vou receber as aulas?',
+    answer: 'A área de membros é 100% online. Você receberá os dados de acesso por email para acessar agora mesmo (logo após a sua inscrição). Enviaremos o login e senha para você entrar na plataforma, onde encontrará todas as aulas listadas e organizadas por módulos e temas.',
+  },
+  {
+    question: 'É online ou presencial?',
+    answer: 'As aulas da Área de Membros são 100% online. Todo acesso é feito através da internet pelo nossa plataforma. Pode assistir as aulas em seu computador, notebook ou tablet. Você não receberá nada em sua casa.',
+  },
+  {
+    question: 'Se tiver outras dúvidas ao assistir as aulas?',
+    answer: 'O Instrutor está sempre disponível no suporte ao aluno tirando dúvidas. Procuramos fazer as aulas da forma mais clara possível, mas se surgir dúvidas, é só mandar uma mensagem para o instrutor, que ele mesmo vai responder.',
+  },
+];
 
-export function FaqAccordion({
-  title = 'Perguntas Frequentes',
-  subtitle = 'Tudo o que você precisa saber sobre a entrega, hospedagem e garantia.',
-  items = [
-    {
-      question: 'Eu preciso mudar a identidade visual ou design do meu site atual?',
-      answer: 'Não! Podemos manter exatamente a identidade visual, cores e layout da sua marca se você preferir. Nós substituímos a infraestrutura interna: trocamos WordPress e dezenas de plugins por código puro Bare-Metal compilado.',
-    },
-    {
-      question: 'Como funciona a Garantia de Performance em Contrato?',
-      answer: 'Garantimos em contrato que a página atingirá Nota 95+ no Google PageSpeed Mobile oficial e abrirá em menos de 1 segundo. Se não atingir esse padrão de engenharia, ajustamos sem custo adicional ou devolvemos 100% do valor.',
-    },
-    {
-      question: 'Como o site é hospedado e atualizado?',
-      answer: 'O site roda em infraestrutura Bare-Metal otimizada com CDN global de borda e deploy automatizado via CI/CD. Qualquer alteração ou nova página é atualizada instantaneamente sem risco de queda.',
-    },
-    {
-      question: 'Posso ter mais de uma Landing Page para testar públicos diferentes?',
-      answer: 'Sim! A arquitetura Bare-Metal suporta múltiplas LPs independentes (ex: /lp1, /lp2, /lp3), cada uma customizada para uma campanha ou oferta específica, todas compartilhando o mesmo padrão de velocidade sub-segundo.',
-    },
-    {
-      question: 'Quanto tempo leva para colocar minha LP no ar?',
-      answer: 'O prazo padrão para entrega completa, otimização e homologação é de 3 a 7 dias úteis.',
-    },
-  ],
-}: FaqAccordionProps) {
+export function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggle = (index: number) => {
@@ -45,51 +45,48 @@ export function FaqAccordion({
   };
 
   return (
-    <section id="faq" className="py-16 md:py-24">
+    <section id="faq" className="py-16 md:py-24 bg-[#05080E]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Header Literal */}
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 mb-4">
-            <HelpCircleIcon className="w-3.5 h-3.5" />
-            <span>TRANSPARÊNCIA TOTAL</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-4">
-            {title}
+          <h2 className="text-2xl sm:text-4xl font-black text-white mb-3 uppercase">
+            Dúvidas <span className="text-[#F6DB17]">frequentes</span>
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300">
-            {subtitle}
-          </p>
         </div>
 
-        <div className="space-y-4">
-          {items.map((item, idx) => {
-            const isOpen = openIndex === idx;
+        {/* Accordion list */}
+        <div className="space-y-3">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
             return (
               <div
-                key={idx}
-                className="glass-card rounded-2xl overflow-hidden border-slate-200 dark:border-slate-800 transition-all duration-200"
+                key={index}
+                className="glass-card rounded-2xl border border-slate-800/80 overflow-hidden transition-all duration-200"
               >
                 <button
-                  type="button"
-                  onClick={() => toggle(idx)}
-                  className="w-full py-5 px-6 text-left font-bold text-base sm:text-lg text-slate-900 dark:text-white flex items-center justify-between gap-4"
+                  onClick={() => toggle(index)}
+                  className="w-full flex items-center justify-between p-5 sm:p-6 text-left font-bold text-white text-base sm:text-lg hover:text-[#F6DB17] transition-colors focus:outline-none"
                   aria-expanded={isOpen}
                 >
-                  <span>{item.question}</span>
+                  <span className="pr-4">{faq.question}</span>
                   <ChevronDownIcon
-                    className={`w-5 h-5 text-slate-500 shrink-0 transition-transform duration-200 ${
-                      isOpen ? 'rotate-180 text-blue-500' : ''
+                    className={`w-5 h-5 text-[#F6DB17] shrink-0 transition-transform duration-200 ${
+                      isOpen ? 'rotate-180' : ''
                     }`}
                   />
                 </button>
+
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-1 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-100 dark:border-slate-800/60">
-                    {item.answer}
+                  <div className="px-5 sm:px-6 pb-5 sm:pb-6 text-slate-300 text-sm sm:text-base leading-relaxed border-t border-slate-800/60 pt-4 animate-fadeIn">
+                    <p>{faq.answer}</p>
                   </div>
                 )}
               </div>
             );
           })}
         </div>
+
       </div>
     </section>
   );

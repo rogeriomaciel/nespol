@@ -11,7 +11,8 @@
     "nova-pagina": "bun scripts/criar-pagina.ts",
     "audit": "bun scripts/audit-pagespeed.ts",
     "sync-base": "./sync-base.sh",
-    "novo-cliente": "./novo-cliente.sh"
+    "novo-cliente": "./novo-cliente.sh",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "react": "^19.0.0",

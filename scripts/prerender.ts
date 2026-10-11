@@ -128,9 +128,9 @@ for (const page of pages) {
     window.addEventListener(evt, loadBundle, { once: true, passive: true });
   });
   if ('requestIdleCallback' in window) {
-    window.requestIdleCallback(loadBundle, { timeout: 6000 });
+    window.requestIdleCallback(loadBundle, { timeout: 12000 });
   } else {
-    setTimeout(loadBundle, 6000);
+    setTimeout(loadBundle, 12000);
   }
 })();
 </script>`;

@@ -2,100 +2,92 @@
 <html lang="pt-BR" class="dark scroll-smooth">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/webp" href="/images/nespol/LOGO-NESPOL-P-TRANSPARENTE.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#020617" />
+    <meta name="theme-color" content="#080C14" />
+
+    <!-- Preload da Imagem Principal LCP (Mobile e Desktop) -->
+    <link rel="preload" as="image" href="/images/nespol/Criar-Videos-Animados-IA-Banner-Kiwify-1-mobile.webp" media="(max-width: 640px)" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/nespol/Criar-Videos-Animados-IA-Banner-Kiwify-1.webp" media="(min-width: 641px)" type="image/webp" fetchpriority="high" />
     
     <!-- Metatags Principais de SEO -->
-    <title>Rogério Maciel — Recriação de Sites em Alta Performance | Arquitetura Core-Bare-Metal™</title>
-    <meta name="description" content="Recriamos o seu site com o mesmo visual que você já tem, mas com abertura instantânea (< 0.5s) na arquitetura Core-Bare-Metal™. Pare de queimar verba de anúncios em páginas lentas." />
+    <title>Nespol — Área de Membros | Crie Vídeos com IA e Lucre na Internet</title>
+    <meta name="description" content="Domine as melhores ferramentas e IAs para criar vídeos e lucrar. Acesso vitalício por apenas 12x de R$ 15,20 ou R$ 147 à vista. +320k no YouTube e +5.000 alunos com o Instrutor Cris." />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Rogério Maciel — Recriação de Sites em Alta Performance | Arquitetura Core-Bare-Metal™" />
-    <meta property="og:description" content="Recriamos o seu site com o mesmo visual que você já tem, mas com abertura instantânea (< 0.5s) na arquitetura Core-Bare-Metal™. Pare de queimar verba de anúncios em páginas lentas." />
-    <meta property="og:url" content="https://rogeriomaciel.com.br/" />
-    <meta property="og:image" content="https://rogeriomaciel.com.br/og-image.jpg" />
+    <meta property="og:title" content="Nespol — Área de Membros | Aprenda a Criar Vídeos com IA" />
+    <meta property="og:description" content="Aprenda a criar vídeos que geram resultados. Domine IA para imagens, voz, TikTok Shop, animações e muito mais por apenas 12x de R$ 15,20 ou R$ 147 à vista." />
+    <meta property="og:url" content="https://nespol.com.br/" />
+    <meta property="og:image" content="/images/nespol/Criar-Videos-Animados-IA-Banner-Kiwify-1.webp" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Rogério Maciel — Recriação de Sites em Alta Performance | Arquitetura Core-Bare-Metal™" />
-    <meta name="twitter:description" content="Recriamos o seu site com o mesmo visual que você já tem, mas com abertura instantânea (< 0.5s) na arquitetura Core-Bare-Metal™. Pare de queimar verba de anúncios em páginas lentas." />
-    <meta name="twitter:image" content="https://rogeriomaciel.com.br/og-image.jpg" />
-
-    <!-- LLM / AI Discovery Links (GEO & ARD) -->
-    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM Summary (llms.txt)" />
-    <link rel="alternate" type="text/plain" href="/llms-full.txt" title="LLM Full Knowledge Base (llms-full.txt)" />
-    <link rel="ai-catalog" type="application/json" href="/.well-known/ai-catalog.json" title="AI Catalog (ARD)" />
-    <link rel="ard" type="application/json" href="/.well-known/ard.json" title="Agentic Resource Discovery (ARD)" />
+    <meta name="twitter:title" content="Nespol — Área de Membros | Aprenda a Criar Vídeos com IA" />
+    <meta name="twitter:description" content="Aprenda a criar vídeos que geram resultados com IA. Acesso vitalício com mais de 100 aulas práticas." />
+    <meta name="twitter:image" content="/images/nespol/Criar-Videos-Animados-IA-Banner-Kiwify-1.webp" />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://rogeriomaciel.com.br/" />
+    <link rel="canonical" href="https://nespol.com.br/" />
 
-    <!-- Dados Estruturados Schema.org JSON-LD para Google e Robôs de IA -->
+    <!-- Dados Estruturados Schema.org JSON-LD -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": "WebSite",
-          "@id": "https://rogeriomaciel.com.br/#website",
-          "url": "https://rogeriomaciel.com.br/",
-          "name": "Rogério Maciel — Recriação de Sites em Alta Performance",
-          "description": "Engenharia de performance e reconstrução de sites na Arquitetura Core-Bare-Metal™ (< 0.5s, Nota 95+ no Google PageSpeed).",
-          "inLanguage": "pt-BR"
-        },
-        {
-          "@type": "Person",
-          "@id": "https://rogeriomaciel.com.br/#person",
-          "name": "Rogério Marinho Maciel",
-          "jobTitle": "Arquiteto de Software & Engenheiro de Performance",
-          "description": "Cientista da Computação UFPB, MBA Marketing, Ex-Head Neoway e criador da Arquitetura Core-Bare-Metal™.",
-          "url": "https://rogeriomaciel.com.br/",
-          "sameAs": [
-            "https://www.linkedin.com/in/macrogerio/",
-            "https://www.instagram.com/mrcrogerio/"
-          ]
-        },
-        {
-          "@type": "ProfessionalService",
-          "@id": "https://rogeriomaciel.com.br/#service",
-          "name": "Rogério Maciel — Engenharia de Performance & Alta Conversão",
-          "url": "https://rogeriomaciel.com.br/",
-          "telephone": "+55-62-99623-2227",
-          "priceRange": "$$$",
-          "address": {
-            "@type": "PostalAddress",
-            "addressCountry": "BR"
+          "@type": "Course",
+          "@id": "https://nespol.com.br/#course",
+          "name": "Área de Membros Nespol - Criar Vídeos com IA",
+          "description": "Treinamento completo para dominar as melhores ferramentas e inteligências artificiais para criar vídeos, animações e lucrar online.",
+          "provider": {
+            "@type": "Organization",
+            "name": "Nespol",
+            "sameAs": "https://youtube.com/nespol"
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "147.00",
+            "priceCurrency": "BRL",
+            "availability": "https://schema.org/InStock",
+            "url": "https://pay.kiwify.com.br/vMKpyAL"
           }
         },
         {
           "@type": "FAQPage",
-          "@id": "https://rogeriomaciel.com.br/#faq",
+          "@id": "https://nespol.com.br/#faq",
           "mainEntity": [
             {
               "@type": "Question",
-              "name": "Eu preciso refazer o design ou mudar a identidade visual do meu site?",
+              "name": "Como comprar o acesso à Área de Membros?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Não! Nós recriamos o visual exato que você já tem e gosta, substituindo o código pesado por engenharia Core-Bare-Metal™ ultrarrápida."
+                "text": "Basta clicar no botão de inscrição, preencher seus dados na Kiwify e concluir o pagamento. Os dados de acesso chegam imediatamente no seu e-mail."
               }
             },
             {
               "@type": "Question",
-              "name": "O que é a Arquitetura Core-Bare-Metal™ e por que ela não perde leads?",
+              "name": "O pagamento é seguro?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "O Core-Bare-Metal™ compila todo o site em arquivos estáticos ultra-leves (< 80 KB) servidos direto no dispositivo do visitante em menos de 1 segundo. O cliente clica no anúncio e a página já está aberta."
+                "text": "Sim! O pagamento é 100% seguro e gerenciado pela plataforma Kiwify, com criptografia e segurança de ponta a ponta."
               }
             },
             {
               "@type": "Question",
-              "name": "Como funciona a Garantia de Performance em Contrato?",
+              "name": "Quantas vezes posso assistir as aulas?",
               "acceptedAnswer": {
                 "@type": "Answer",
-                "text": "Garantimos em contrato que a página atingirá Nota 95+ no Google PageSpeed Mobile oficial e abrirá em menos de 1 segundo. Se não atingir esse padrão de engenharia, ajustamos sem custo ou devolvemos 100% do valor."
+                "text": "Quantas vezes quiser! O acesso é vitalício, incluindo todas as futuras atualizações e novos módulos adicionados."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Como funciona a garantia de 7 dias?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Se por qualquer motivo você não gostar das aulas até 7 dias após a compra, basta solicitar o reembolso que devolvemos 100% do seu investimento."
               }
             }
           ]
@@ -103,24 +95,8 @@
       ]
     }
     </script>
-
-    <!-- Anti-FOUC Theme Script -->
-    <script>
-      (function() {
-        try {
-          var saved = localStorage.getItem('theme');
-          if (saved === 'light') {
-            document.documentElement.classList.remove('dark');
-          } else {
-            document.documentElement.classList.add('dark');
-          }
-        } catch (e) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
-    </script>
   </head>
-  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-blue-600 selection:text-white">
+  <body class="bg-[#080C14] text-slate-100 font-sans antialiased selection:bg-[#F6DB17] selection:text-black">
     <div id="root"></div>
     <script type="module" src="/src/entries/main.tsx"></script>
   </body>
